@@ -5,11 +5,11 @@
   <key>CFBundleDisplayName</key><string>冬日小窝</string>
   <key>CFBundleName</key><string>冬日小窝</string>
   <key>CFBundleExecutable</key><string>WinterNook</string>
-  <key>CFBundleIdentifier</key><string>com.winternook.desktop</string>
+  <key>CFBundleIdentifier</key><string>com.winternook.desktop.musicbox</string>
   <key>CFBundleIconFile</key><string>WinterNook.icns</string>
   <key>CFBundlePackageType</key><string>APPL</string>
-  <key>CFBundleShortVersionString</key><string>1.0</string>
-  <key>CFBundleVersion</key><string>1</string>
+  <key>CFBundleShortVersionString</key><string>1.1.0</string>
+  <key>CFBundleVersion</key><string>2</string>
   <key>LSMinimumSystemVersion</key><string>12.0</string>
   <key>NSHighResolutionCapable</key><true/>
   <key>NSPrincipalClass</key><string>NSApplication</string>

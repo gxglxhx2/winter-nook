@@ -7,6 +7,7 @@
 <title>冬日小窝 · Winter Nook</title>
 <link rel="stylesheet" href="style.css">
 <script defer src="art.js"></script>
+<script defer src="music.js"></script>
 <script defer src="game.js"></script>
 </head>
 <body>
@@ -28,10 +29,13 @@
   <header class="masthead">
     <div class="brand">
       <div class="brand-mark" aria-hidden="true"><canvas width="34" height="35" data-sprite="logo"></canvas></div>
-      <div class="brand-copy"><div class="wordmark">冬日小窝</div><div class="subtitle">WINTER NOOK</div></div>
+      <div class="brand-copy"><div class="wordmark">冬日小窝</div><div class="subtitle">CHRISTMAS MUSIC BOX</div></div>
     </div>
     <div class="top-actions">
-      <button class="tool music" data-music aria-label="播放音乐" aria-pressed="false" title="播放音乐"><svg class="ico"><use href="#i-note"/></svg><span class="mute-strike" aria-hidden="true"></span></button>
+      <div class="mini-transport">
+        <button class="tool" data-play aria-label="播放音乐"><span>▶</span></button>
+        <button class="tool" data-step="1" aria-label="下一首" title="下一首">›|</button>
+      </div>
       <button class="tool mode" id="mode" aria-pressed="false" title="把小栗放在屏幕底部"><svg class="ico"><use id="mode-icon" href="#i-mini"/></svg><span id="mode-label">桌面挂件</span></button>
     </div>
   </header>
@@ -39,7 +43,7 @@
   <section class="scene" aria-label="松果村的圣诞雪景">
     <canvas id="landscape" width="384" height="152" aria-label="像素画：雪地里有小鹿、木屋和圣诞装饰"></canvas>
     <div class="weather"><svg class="ico"><use href="#i-snow"/></svg><span>松果村</span><b></b><span>雪夜</span></div>
-    <div class="scene-tag">CHRISTMAS EVE <span>✦</span></div>
+    <div class="scene-tag">SANTA’S WORKSHOP <span>✦</span></div>
     <button id="pet-hit" aria-label="摸摸小栗" title="摸摸小栗"></button>
     <div class="pet-toast" id="pet-toast" aria-hidden="true">今晚一起过圣诞吧！</div>
   </section>
@@ -57,10 +61,37 @@
       <button class="care-btn" data-action="sleep"><svg class="ico"><use href="#i-moon"/></svg><span>打个盹</span></button>
     </div>
   </section>
+  <section class="music-box" aria-label="圣诞音乐盒">
+    <div class="player-title">
+      <div class="disc" aria-hidden="true"><svg class="ico"><use href="#i-note"/></svg></div>
+      <div><div class="player-heading">圣诞音乐盒 <span id="music-count"></span></div><div class="now-playing"><strong id="track-title"></strong> <span id="track-meta"></span></div></div>
+    </div>
+    <div class="transport" aria-label="播放控制">
+      <button class="player-button" data-step="-1" aria-label="上一首" title="上一首">|‹</button>
+      <button class="player-button play" data-play aria-label="播放音乐"><span>▶</span></button>
+      <button class="player-button" data-step="1" aria-label="下一首" title="下一首">›|</button>
+    </div>
+    <div class="music-settings">
+      <select id="track-select" aria-label="选择曲目"></select>
+      <select id="loop-mode" aria-label="播放模式"><option value="all">歌单循环</option><option value="one">单曲循环</option></select>
+      <input id="volume" type="range" min="0" max="1" step=".01" aria-label="音乐音量" title="音乐音量">
+      <label class="import" title="添加本机音频（本次打开有效）">＋本地歌曲<input type="file" id="import-songs" accept="audio/*,.mp3,.m4a,.wav,.flac,.aac,.ogg,.aiff" multiple aria-label="添加本地歌曲"></label>
+    </div>
+  </section>
   <section class="decor" aria-labelledby="decor-title">
     <div class="section-head">
-      <h1 id="decor-title"><svg class="ico"><use href="#i-box"/></svg>圣诞装饰 <span>DECORATE</span></h1>
-      <div class="section-caption"><span id="decor-count">已摆放 2 件</span><b></b><span>点击摆放或收起</span></div>
+      <h1 id="decor-title"><svg class="ico"><use href="#i-box"/></svg>DIY 圣诞工坊 <span>BUILD YOUR VILLAGE</span></h1>
+      <div class="section-caption"><span id="decor-count"></span><div id="shelf-arrows" class="shelf-arrows" hidden><button id="shelf-prev" aria-label="向左浏览挂饰" title="向左浏览挂饰">‹</button><button id="shelf-next" aria-label="向右浏览挂饰" title="向右浏览挂饰">›</button></div></div>
+    </div>
+    <div class="builder-toolbar">
+      <div class="builder-tabs" aria-label="装饰分类">
+        <button data-group="tree" aria-pressed="true">圣诞树</button><button data-group="friend" aria-pressed="false">像素伙伴</button><button data-group="decor" aria-pressed="false">主题挂饰</button>
+      </div>
+      <div class="builder-controls">
+        <label id="zone-label">树位 <select id="tree-zone" aria-label="圣诞树位置"><option value="1">中央</option><option value="0">左边</option><option value="2">右边</option></select></label>
+        <label>主题 <select id="color-theme" aria-label="雪景主题"><option value="festive">红金工坊</option><option value="candy">糖果嘉年华</option><option value="aurora">极光冰境</option></select></label>
+        <label>挂件长度 <select id="strip-size" aria-label="桌面挂件长度"><option value="standard">标准</option><option value="long">加长</option><option value="wide">铺满屏底</option></select></label>
+      </div>
     </div>
     <div id="items" class="items" aria-label="装饰清单"></div>
   </section>

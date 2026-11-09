@@ -1,41 +1,32 @@
-# 冬日小窝 · Winter Nook
+# 冬日小窝 · 圣诞音乐盒
 
-一款离线运行的 macOS 像素宠物游戏。雪夜里的小鹿叫小栗。
+Science Live 制作的 macOS 像素宠物游戏。让小鹿小栗、亮着彩灯的圣诞树和音乐盒留在屏幕底部。
 
-![18 秒游戏演示：照顾小鹿、换树和切换桌面挂件](docs/media/winter-nook-demo.webp)
+**[下载最新 Mac 版](https://github.com/gxglxhx2/winter-nook/releases/latest)**。解压后打开「冬日小窝-圣诞音乐盒.app」，支持 macOS 12 及以上、Apple 芯片与 Intel Mac。
 
-[下载 18 秒 MP4 演示](https://github.com/gxglxhx2/winter-nook/raw/refs/heads/main/docs/media/winter-nook-demo.mp4)
+## 演示
 
-[下载 Mac 版](https://github.com/gxglxhx2/winter-nook/releases/latest) · 发布者：Science Live
+![圣诞音乐盒版演示，包括切歌、布置和加长挂件](docs/media/v1.1.0/music-box-demo.webp)
 
-## 截图
+[下载带音乐的 21 秒演示 MP4](https://github.com/gxglxhx2/winter-nook/raw/refs/tags/v1.1.0/docs/media/v1.1.0/music-box-demo.mp4)
 
-**布置界面**
+## 游戏截图
 
-![冬日小窝主界面和装饰栏](docs/media/01-game.jpg)
+![圣诞音乐盒与 DIY 圣诞工坊](docs/media/v1.1.0/game.png)
 
-**桌面挂件**
-
-![小栗和圣诞树林的桌面挂件](docs/media/02-desktop.png)
-
-## 开始玩
-
-- 解压游戏包，双击「冬日小窝.app」。支持 macOS 12 或更新版本，包含 Apple 芯片和 Intel 版本。
+![加长的透明桌面挂件](docs/media/v1.1.0/desktop.png)
 
 ## 功能与操作
 
 | 功能 | 怎么玩 |
 | --- | --- |
-| 照顾小栗 | 点小鹿摸摸它，或按「喂饼干」「打个盹」。每天完成三种互动就能收齐三枚雪花。 |
-| 装饰雪地 | 在经典松树、冰蓝杉和莓粉杉之间切换。礼物、雪人、暖灯笼、糖果手杖和雪橇都能单独摆放或收起。 |
-| 桌面挂件 | 点右上角「桌面挂件」，让小鹿和圣诞树置顶显示在 Dock 上方。鼠标移到挂件右侧可操作，按 **⌥⌘M** 回到布置界面。 |
-| 音乐和存档 | 点音符开关音乐；装饰和陪伴进度会自动保存在这台 Mac 上，游戏可离线运行。 |
+| 圣诞音乐盒 | 选播 13 首曲目，调音量、切歌或单曲循环。点「＋本地歌曲」可在当前会话导入 MP3、M4A、WAV 等。 |
+| DIY 圣诞村 | 用 6 款树填满三个树位，挑选 6 位像素伙伴和 15 件挂饰，切换红金、糖果或极光主题。 |
+| 桌面挂件 | 选标准、加长或铺满屏底，再点右上角「桌面挂件」。移到右侧可以切歌，按 **⌥⌘M** 回到布置界面。 |
+| 照顾小栗 | 摸摸小鹿、喂饼干、让它打盹，每天收集三枚雪花。旧版布置可以带入。 |
 
 ## 源码
 
-- `web/art.js`：原始像素画、雪景、桌面挂件和动画。
-- `web/game.js`：互动、装饰、存档和本地合成的音乐。
-- `main.m`：macOS 窗口、底部置顶和本地进度存储。
-- `make-icon.py`：小鹿与圣诞树的应用图标绘制。图标已生成，无需重新绘制即可构建。
+在安装好 Apple Command Line Tools 的 Mac 上运行 `bash build.sh`。应用输出到 `build/冬日小窝.app`。浏览器也可以打开 `web/index.html` 预览游戏。
 
-安装好 Apple Command Line Tools 后，在此目录执行 `bash build.sh`。生成的 App 位于 `build/冬日小窝.app`。也可执行 `bash build.sh "/其他目录/冬日小窝.app"` 指定一个新路径。浏览器打开 `web/index.html` 可预览游戏；桌面置顶由 macOS App 提供。
+像素插画和音乐盒编曲均为本项目制作。配色和节日挂饰的灵感来自 [LEGO 2026 Holiday House](https://www.lego.com/en-ca/aboutus/news/2026/september/the-lego-group-builds-up-to-the-holidays)。

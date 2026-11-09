@@ -1,5 +1,6 @@
 #import <AppKit/AppKit.h>
 #import <WebKit/WebKit.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 static NSString *const kSaveKey = @"WinterNook.Progress.v1";
 static NSString *const kModeKey = @"WinterNook.Mini.v1";
@@ -18,7 +19,7 @@ static NSColor *Background(void) {
     return [NSColor colorWithSRGBRed:26.0/255.0 green:23.0/255.0 blue:36.0/255.0 alpha:1.0];
 }
 
-@interface GameDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate, WKScriptMessageHandler, WKNavigationDelegate>
+@interface GameDelegate : NSObject <NSApplicationDelegate, NSWindowDelegate, WKScriptMessageHandler, WKNavigationDelegate, WKUIDelegate>
 @property(nonatomic, strong) NSWindow *window;
 @property(nonatomic, strong) WKWebView *web;
 @property(nonatomic, strong) NSURL *gameURL;
@@ -33,6 +34,9 @@ static NSColor *Background(void) {
 - (void)applicationDidFinishLaunching:(NSNotification *)note {
     (void)note;
     NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+    NSDictionary *oldSave = [[defaults persistentDomainForName:@"com.winternook.desktop"] objectForKey:kSaveKey];
+    if (![defaults objectForKey:kSaveKey] && oldSave)
+        [defaults setObject:oldSave forKey:kSaveKey];
     self.mini = [defaults boolForKey:kModeKey];
     [self buildMenu];
     self.gameURL = [NSBundle.mainBundle URLForResource:@"index" withExtension:@"html" subdirectory:@"web"];
@@ -64,6 +68,7 @@ static NSColor *Background(void) {
     [configuration.userContentController addScriptMessageHandler:self name:@"winterNook"];
     self.web = [[WKWebView alloc] initWithFrame:NSZeroRect configuration:configuration];
     self.web.navigationDelegate = self;
+    self.web.UIDelegate = self;
     self.web.allowsBackForwardNavigationGestures = NO;
     self.web.allowsLinkPreview = NO;
     if (@available(macOS 12.0, *)) self.web.underPageBackgroundColor = Background();
@@ -125,11 +130,13 @@ static NSColor *Background(void) {
     NSScreen *screen = [self screenForSavedFrame:old fallback:fallback];
     NSRect available = screen ? screen.visibleFrame : NSMakeRect(0,0,1200,760);
     CGFloat usableWidth = MAX(320, NSWidth(available) - 28);
-    CGFloat fitHeight = (NSHeight(available) - 339) * 384 / 152 + 50;
-    CGFloat width = self.mini ? MIN(640, usableWidth) : MIN(1004, MIN(usableWidth, MAX(640, fitHeight)));
+    CGFloat fitHeight = (NSHeight(available) - 407) * 384 / 146 + 50;
+    NSString *length = [[NSUserDefaults.standardUserDefaults dictionaryForKey:kSaveKey] objectForKey:@"length"];
+    CGFloat stripWidth = [length isEqualToString:@"standard"] ? 710 : [length isEqualToString:@"wide"] ? usableWidth : 990;
+    CGFloat width = self.mini ? MIN(stripWidth, usableWidth) : MIN(1060, MIN(usableWidth, MAX(740, fitHeight)));
     CGFloat horizontalPadding = width <= 790 ? 36 : 50;
-    CGFloat height = self.mini ? ceil(width * 82 / 384)
-        : ceil(293 + (width - horizontalPadding) * 152 / 384);
+    CGFloat height = self.mini ? ceil(width * 82 / 576)
+        : ceil(367 + (width - horizontalPadding) * 146 / 384);
     if (!self.mini) height = MIN(height, NSHeight(available)-35);
     self.applyingFrame = YES;
     self.window.styleMask = self.mini ? NSWindowStyleMaskBorderless : MainStyle;
@@ -178,7 +185,7 @@ static NSColor *Background(void) {
     NSPoint p = NSEvent.mouseLocation;
     // Most of the snow strip lets clicks reach the desktop or window behind it.
     CGFloat x = (p.x-NSMinX(f))/NSWidth(f), y = (p.y-NSMinY(f))/NSHeight(f);
-    BOOL pet = x>=.42 && x<=.55 && y>=.08 && y<=.57;
+    BOOL pet = x>=.45 && x<=.54 && y>=.08 && y<=.57;
     BOOL controls = x>=.80 && x<=1 && y>=0 && y<=1;
     self.window.ignoresMouseEvents = !(pet || controls);
 }
@@ -216,6 +223,31 @@ static NSColor *Background(void) {
             [NSUserDefaults.standardUserDefaults setObject:save forKey:kSaveKey];
         }
     }
+}
+
+- (void)webView:(WKWebView *)webView runOpenPanelWithParameters:(WKOpenPanelParameters *)params
+ initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSArray<NSURL *> *))handler {
+    if (!frame.isMainFrame || ![frame.request.URL isEqual:self.gameURL]) { handler(nil); return; }
+    NSOpenPanel *panel = NSOpenPanel.openPanel;
+    panel.title = @"添加本地圣诞歌曲";
+    panel.prompt = @"添加歌曲";
+    panel.canChooseDirectories = NO;
+    panel.canChooseFiles = YES;
+    panel.allowsMultipleSelection = params.allowsMultipleSelection;
+    NSMutableArray<UTType *> *types = [NSMutableArray arrayWithObject:UTTypeAudio];
+    for (NSString *extension in @[@"mp3",@"m4a",@"aac",@"wav",@"ogg",@"flac",@"aiff"]) {
+        UTType *type = [UTType typeWithFilenameExtension:extension];
+        if (type) [types addObject:type];
+    }
+    panel.allowedContentTypes = types;
+    [panel beginSheetModalForWindow:self.window completionHandler:^(NSModalResponse r){
+        handler(r == NSModalResponseOK ? panel.URLs : nil);
+    }];
+}
+
+- (void)applicationDidChangeScreenParameters:(NSNotification *)note {
+    (void)note;
+    if(self.mini && self.window) [self applyModeChoosingScreen:self.window.screen];
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)nav

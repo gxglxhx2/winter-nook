@@ -15,9 +15,9 @@ bundle="$staging/冬日小窝.app"
 mkdir -p "$bundle/Contents/MacOS" "$bundle/Contents/Resources/web"
 xcrun --sdk macosx clang -isysroot "$(xcrun --sdk macosx --show-sdk-path)" \
   -arch arm64 -arch x86_64 -mmacosx-version-min=12.0 -O2 -fobjc-arc \
-  -Wall -Wextra "$src_dir/main.m" -framework AppKit -framework WebKit \
+  -Wall -Wextra "$src_dir/main.m" -framework AppKit -framework WebKit -framework UniformTypeIdentifiers \
   -o "$bundle/Contents/MacOS/WinterNook"
-cp -X "$src_dir"/web/{index.html,style.css,game.js,art.js} "$bundle/Contents/Resources/web/"
+cp -X "$src_dir"/web/{index.html,style.css,game.js,art.js,music.js} "$bundle/Contents/Resources/web/"
 cp -X "$src_dir/Info.plist" "$bundle/Contents/Info.plist"
 cp -X "$src_dir/WinterNook.icns" "$bundle/Contents/Resources/WinterNook.icns"
 codesign --force --sign - "$bundle"
