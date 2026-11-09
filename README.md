@@ -2,7 +2,9 @@
 
 一款离线运行的 macOS 像素宠物游戏。雪夜里的小鹿叫小栗。
 
-[▶ 观看 18 秒游戏演示](https://github.com/gxglxhx2/winter-nook/blob/main/docs/media/winter-nook-demo.mp4)
+![18 秒游戏演示：照顾小鹿、换树和切换桌面挂件](docs/media/winter-nook-demo.webp)
+
+[下载 18 秒 MP4 演示](https://github.com/gxglxhx2/winter-nook/raw/refs/heads/main/docs/media/winter-nook-demo.mp4)
 
 [下载 Mac 版](https://github.com/gxglxhx2/winter-nook/releases/latest) · 发布者：Science Live
 
