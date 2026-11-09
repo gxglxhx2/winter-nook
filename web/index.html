@@ -26,27 +26,31 @@
 </svg>
 
 <main class="shell">
-  <header class="masthead">
-    <div class="brand">
-      <div class="brand-mark" aria-hidden="true"><canvas width="34" height="35" data-sprite="logo"></canvas></div>
-      <div class="brand-copy"><div class="wordmark">冬日小窝</div><div class="subtitle">CHRISTMAS MUSIC BOX</div></div>
-    </div>
-    <div class="top-actions">
-      <div class="mini-transport">
-        <button class="tool" data-play aria-label="播放音乐"><span>▶</span></button>
-        <button class="tool" data-step="1" aria-label="下一首" title="下一首">›|</button>
-      </div>
-      <button class="tool mode" id="mode" aria-pressed="false" title="把小栗放在屏幕底部"><svg class="ico"><use id="mode-icon" href="#i-mini"/></svg><span id="mode-label">桌面挂件</span></button>
-    </div>
-  </header>
-
   <section class="scene" aria-label="松果村的圣诞雪景">
     <canvas id="landscape" width="384" height="152" aria-label="像素画：雪地里有小鹿、木屋和圣诞装饰"></canvas>
-    <div class="weather"><svg class="ico"><use href="#i-snow"/></svg><span>松果村</span><b></b><span>雪夜</span></div>
-    <div class="scene-tag">SANTA’S WORKSHOP <span>✦</span></div>
-    <button id="pet-hit" aria-label="摸摸小栗" title="摸摸小栗"></button>
-    <div class="pet-toast" id="pet-toast" aria-hidden="true">今晚一起过圣诞吧！</div>
+    <button id="pet-hit" aria-label="摸摸小栗"></button>
+    <button id="settings-star" type="button" aria-label="打开设置" aria-expanded="false" aria-controls="settings-panel">
+      <svg class="star-mark" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">
+        <path fill="#8e461e" d="M7 0h2v2h1v3h6v3h-2v2h-2v2h1v4h-3v-2H6v2H3v-4h1v-2H2V8H0V5h6V2h1z"/>
+        <path fill="#ffac29" d="M7 1h2v3h1v2h5v2h-2v2h-2v3h1v2h-2v-2H6v2H4v-2h1v-3H3V8H1V6h5V4h1z"/>
+        <path fill="#ffe359" d="M7 3h2v3h1v1h4v1h-2v2h-2v2H6v-2H4V8H2V7h4V6h1z"/>
+        <path fill="#fff6a9" d="M7 5h1v2h2v1H8v2H7V8H5V7h2z"/>
+      </svg>
+      <svg class="gear-mark" viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">
+        <path fill="#8e461e" d="M6 0h4v2h2V1h3v3h-1v2h2v4h-2v2h1v3h-3v-1h-2v2H6v-2H4v1H1v-3h1v-2H0V6h2V4H1V1h3v1h2z"/>
+        <path fill="#ffc643" fill-rule="evenodd" d="M6 1h4v2h2V2h2v2h-1v2h2v4h-2v2h1v2h-2v-1h-2v2H6v-2H4v1H2v-2h1v-2H1V6h2V4H2V2h2v1h2zM6 5h4v1h1v4h-1v1H6v-1H5V6h1z"/>
+        <path fill="#fff4ac" d="M6 2h3v1H6zM3 5h1v3H3z"/>
+      </svg>
+    </button>
   </section>
+  <section id="settings-panel" class="settings-panel" role="dialog" aria-labelledby="settings-title" hidden>
+    <header class="settings-heading">
+      <h1 id="settings-title" tabindex="-1">圣诞设置</h1>
+      <div class="settings-actions">
+        <button class="tool mode" id="mode" aria-pressed="false"><svg class="ico"><use id="mode-icon" href="#i-mini"/></svg><span id="mode-label">桌面挂件</span></button>
+        <button id="close-settings" class="tool" type="button" aria-label="关闭设置">×</button>
+      </div>
+    </header>
   <section class="pet-bar" aria-label="照顾小栗">
     <div class="pet-info">
       <div class="avatar" aria-hidden="true"><canvas width="43" height="43" data-sprite="pet"></canvas></div>
@@ -99,6 +103,7 @@
     <div class="stamps"><svg class="ico"><use href="#i-snow"/></svg><span>今日陪伴</span><span class="stamp-pips" id="stamp-pips" aria-hidden="true"><i></i><i></i><i></i></span><span id="stamp-count">0 / 3</span></div>
     <span class="saved"><svg class="ico"><use href="#i-check"/></svg>进度自动保存</span>
   </footer>
+  </section>
   <p class="sr-only" id="live" role="status" aria-live="polite"></p>
 </main>
 </body>

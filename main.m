@@ -6,6 +6,8 @@ static NSString *const kSaveKey = @"WinterNook.Progress.v1";
 static NSString *const kModeKey = @"WinterNook.Mini.v1";
 static NSString *const kFullFrameKey = @"WinterNook.FullFrame.v1";
 static NSString *const kMiniFrameKey = @"WinterNook.MiniFrame.v1";
+static const CGFloat VillageAspect = 152.0 / 384.0;
+static const CGFloat DesktopAspect = 130.0 / 576.0;
 static const NSWindowStyleMask MainStyle = NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable;
 
 @interface GameWindow : NSWindow
@@ -26,6 +28,9 @@ static NSColor *Background(void) {
 @property(nonatomic, strong) NSMenuItem *modeItem;
 @property(nonatomic) BOOL mini;
 @property(nonatomic) BOOL applyingFrame;
+@property(nonatomic) BOOL settingsOpen;
+@property(nonatomic) CGFloat desktopHeight;
+@property(nonatomic) NSPoint starAnchor;
 @property(nonatomic, strong) NSTimer *mouseTimer;
 @end
 
@@ -38,6 +43,7 @@ static NSColor *Background(void) {
     if (![defaults objectForKey:kSaveKey] && oldSave)
         [defaults setObject:oldSave forKey:kSaveKey];
     self.mini = [defaults boolForKey:kModeKey];
+    self.starAnchor = NSMakePoint(389.0/576.0, 58.0/130.0);
     [self buildMenu];
     self.gameURL = [NSBundle.mainBundle URLForResource:@"index" withExtension:@"html" subdirectory:@"web"];
     if (!self.gameURL) {
@@ -130,14 +136,16 @@ static NSColor *Background(void) {
     NSScreen *screen = [self screenForSavedFrame:old fallback:fallback];
     NSRect available = screen ? screen.visibleFrame : NSMakeRect(0,0,1200,760);
     CGFloat usableWidth = MAX(320, NSWidth(available) - 28);
-    CGFloat fitHeight = (NSHeight(available) - 407) * 384 / 146 + 50;
     NSString *length = [[NSUserDefaults.standardUserDefaults dictionaryForKey:kSaveKey] objectForKey:@"length"];
     CGFloat stripWidth = [length isEqualToString:@"standard"] ? 710 : [length isEqualToString:@"wide"] ? usableWidth : 990;
-    CGFloat width = self.mini ? MIN(stripWidth, usableWidth) : MIN(1060, MIN(usableWidth, MAX(740, fitHeight)));
-    CGFloat horizontalPadding = width <= 790 ? 36 : 50;
-    CGFloat height = self.mini ? ceil(width * 82 / 576)
-        : ceil(367 + (width - horizontalPadding) * 146 / 384);
-    if (!self.mini) height = MIN(height, NSHeight(available)-35);
+    CGFloat width = self.mini ? MIN(stripWidth, usableWidth) : MIN(1240, usableWidth);
+    CGFloat maxContentHeight = MAX(180, NSHeight(available) - (self.mini ? 8 : 36));
+    CGFloat ratio = self.mini ? DesktopAspect : VillageAspect;
+    width = MIN(width, floor(maxContentHeight / ratio));
+    CGFloat pictureHeight = ceil(width * ratio);
+    CGFloat panelHeight = self.settingsOpen ? MIN(328, MAX(0, maxContentHeight - pictureHeight)) : 0;
+    CGFloat height = pictureHeight + panelHeight;
+    self.desktopHeight = self.mini ? pictureHeight : 0;
     self.applyingFrame = YES;
     self.window.styleMask = self.mini ? NSWindowStyleMaskBorderless : MainStyle;
     self.window.opaque = !self.mini;
@@ -183,15 +191,19 @@ static NSColor *Background(void) {
     (void)timer;
     NSRect f = self.window.frame;
     NSPoint p = NSEvent.mouseLocation;
-    // Most of the snow strip lets clicks reach the desktop or window behind it.
-    CGFloat x = (p.x-NSMinX(f))/NSWidth(f), y = (p.y-NSMinY(f))/NSHeight(f);
-    BOOL pet = x>=.45 && x<=.54 && y>=.08 && y<=.57;
-    BOOL controls = x>=.80 && x<=1 && y>=0 && y<=1;
-    self.window.ignoresMouseEvents = !(pet || controls);
+    // Snow is click-through. Only the pet, star, and visible panel accept input.
+    CGFloat dx = p.x - NSMinX(f), dy = p.y - NSMinY(f);
+    CGFloat x = dx / NSWidth(f), y = dy / self.desktopHeight;
+    CGFloat starRadius = MIN(NSWidth(f) * .05, 100) / 2 + 1;
+    BOOL star = fabs(dx - self.starAnchor.x * NSWidth(f)) <= starRadius &&
+                fabs(dy - (1 - self.starAnchor.y) * self.desktopHeight) <= starRadius;
+    BOOL pet = x >= .45 && x <= .54 && y >= .06 && y <= .36;
+    BOOL panel = self.settingsOpen && x >= 0 && x <= 1 && dy >= self.desktopHeight - 1 && dy <= NSHeight(f);
+    self.window.ignoresMouseEvents = !(pet || star || panel);
 }
 
 - (void)rememberFrame {
-    if (!self.applyingFrame && self.window && !self.window.isMiniaturized)
+    if (!self.applyingFrame && !self.settingsOpen && self.window && !self.window.isMiniaturized)
         [NSUserDefaults.standardUserDefaults setObject:NSStringFromRect(self.window.frame) forKey:self.frameKey];
 }
 
@@ -199,6 +211,7 @@ static NSColor *Background(void) {
     (void)sender;
     [self rememberFrame];
     NSScreen *screen = self.window.screen;
+    self.settingsOpen = NO;
     self.mini = !self.mini;
     [NSUserDefaults.standardUserDefaults setBool:self.mini forKey:kModeKey];
     NSString *js = self.mini ? @"window.WinterNook?.setMini(true)" : @"window.WinterNook?.setMini(false)";
@@ -214,13 +227,30 @@ static NSColor *Background(void) {
     NSDictionary *body = message.body;
     if ([body[@"type"] isEqual:@"mode"]) {
         [self toggleMode:nil];
+    } else if ([body[@"type"] isEqual:@"settings"] && [body[@"open"] isKindOfClass:NSNumber.class]) {
+        BOOL open = [body[@"open"] boolValue];
+        if (open != self.settingsOpen) {
+            if (open) [self rememberFrame];
+            self.settingsOpen = open;
+            [self applyModeChoosingScreen:self.window.screen];
+            if (open) [self.window makeKeyAndOrderFront:nil];
+        }
+    } else if ([body[@"type"] isEqual:@"starAnchor"] && [body[@"x"] isKindOfClass:NSNumber.class] &&
+               [body[@"y"] isKindOfClass:NSNumber.class]) {
+        CGFloat x = [body[@"x"] doubleValue], y = [body[@"y"] doubleValue];
+        if (x >= 0 && x <= 1 && y >= 0 && y <= 1) self.starAnchor = NSMakePoint(x, y);
+        if (self.mini) [self updateMouseRegion:nil];
     } else if ([body[@"type"] isEqual:@"save"] && [body[@"state"] isKindOfClass:NSDictionary.class]) {
         NSDictionary *state = body[@"state"];
         NSMutableDictionary *save = [state mutableCopy];
         // NSNull does not round trip through property lists; false represents an empty slot.
         if (save[@"tree"] == NSNull.null) save[@"tree"] = @NO;
         if ([NSPropertyListSerialization propertyList:save isValidForFormat:NSPropertyListBinaryFormat_v1_0]) {
-            [NSUserDefaults.standardUserDefaults setObject:save forKey:kSaveKey];
+            NSUserDefaults *defaults = NSUserDefaults.standardUserDefaults;
+            NSString *oldLength = [[defaults dictionaryForKey:kSaveKey] objectForKey:@"length"];
+            [defaults setObject:save forKey:kSaveKey];
+            if (self.mini && ![oldLength isEqual:save[@"length"]])
+                [self applyModeChoosingScreen:self.window.screen];
         }
     }
 }

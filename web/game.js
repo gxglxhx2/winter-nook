@@ -30,7 +30,8 @@
     day:today(),
     care:loaded?.day===today()&&Array.isArray(loaded?.care)?[...new Set(loaded.care.filter(x=>actions.includes(x)))]:[]
   };
-  let mini=false,pose='idle',poseTimer,toastTimer,last=0,player,group='tree',zone=1;
+  let mini=false,pose='idle',poseTimer,last=0,player,group='tree',zone=1;
+  let settingsOpen=false,starRainUntil=0,starAnimationTimer;
   function cue(chord){player?.cue(chord);}
   const motion=matchMedia('(prefers-reduced-motion: reduce)');
   const savedEl=document.querySelector('.saved');
@@ -49,14 +50,47 @@
     $('stamp-count').textContent=n+' / 3';
     $('stamp-pips').querySelectorAll('i').forEach((el,i)=>el.classList.toggle('lit',i<n));
   }
-  function say(msg,ms=3300){
-    clearTimeout(toastTimer);
-    const el=$('pet-toast');
-    el.textContent=msg;el.classList.remove('hidden');
-    $('live').textContent=msg;
-    toastTimer=setTimeout(()=>el.classList.add('hidden'),ms);
+  function say(message){$('live').textContent=message;}
+  function repaint(t=performance.now()/1000){
+    if(typeof t!=='number')t=performance.now()/1000;
+    if(mini)art.desktop(ctx,t,state,pose,starRainUntil);
+    else art.scene(ctx,t,state,pose);
   }
-  function repaint(t=performance.now()/1000){(mini?art.desktop:art.scene)(ctx,t,state,pose);}
+  function startStarRain(){
+    if(!motion.matches)starRainUntil=performance.now()/1000+11;
+  }
+  const settingsPanel=$('settings-panel'),settingsStar=$('settings-star');
+  function updateStar(){
+    const anchor=art.settingsAnchor(state,mini);
+    settingsStar.style.left=(anchor.x*100)+'%';
+    settingsStar.style.top=(anchor.y*100)+'%';
+    if(bridge&&mini)bridge.postMessage({type:'starAnchor',x:anchor.x,y:anchor.y});
+  }
+  function setSettings(open,animate=true,focus=true){
+    if(open===settingsOpen)return;
+    settingsOpen=open;
+    clearTimeout(starAnimationTimer);
+    settingsStar.classList.remove('burst');
+    if(open&&animate&&!motion.matches){
+      void settingsStar.offsetWidth;
+      settingsStar.classList.add('burst');
+      starAnimationTimer=setTimeout(()=>settingsStar.classList.remove('burst'),280);
+    }
+    settingsPanel.hidden=!open;
+    settingsStar.setAttribute('aria-expanded',String(open));
+    settingsStar.setAttribute('aria-label',open?'关闭设置':'打开设置');
+    if(bridge)bridge.postMessage({type:'settings',open});
+    if(!focus)return;
+    if(open){
+      $('settings-title').focus({preventScroll:true});
+      if(!bridge)settingsPanel.scrollIntoView({block:'nearest',behavior:'instant'});
+    }else settingsStar.focus({preventScroll:true});
+  }
+  settingsStar.addEventListener('click',()=>setSettings(!settingsOpen));
+  $('close-settings').addEventListener('click',()=>setSettings(false));
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&settingsOpen){event.preventDefault();setSettings(false);}
+  });
   function setPose(p){
     pose=p;
     $('pet-status').textContent={idle:'想跟你一起看雪',feed:'正开心地嚼饼干',pet:'很喜欢你的摸摸',sleep:'围着围巾做梦呢'}[p];
@@ -97,7 +131,7 @@
     let removed=false;
     if(category==='tree'){removed=state.trees[zone]===id;state.trees[zone]=removed?false:id;}
     else {const list=state[category==='friend'?'friends':'decor'];const i=list.indexOf(id);removed=i>=0;if(removed)list.splice(i,1);else list.push(id);}
-    paintItems();repaint();store();
+    paintItems();updateStar();repaint();store();
     $('live').textContent=(removed?'已收起':'已摆放')+labels[id];
     cue(removed?[69,65]:[72,79]);
   }
@@ -136,10 +170,12 @@
   $('pet-hit').addEventListener('click',()=>care('pet'));
   function setMini(value){
     mini=!!value;
+    setSettings(false,false,false);
     document.body.classList.toggle('mini',mini);
     document.documentElement.classList.toggle('mini',mini);
     canvas.width=mini?art.DOCK_W:art.W;
     canvas.height=mini?art.DOCK_H:art.H;
+    updateStar();
     repaint();
     canvas.setAttribute('aria-label',mini?'屏幕底部的像素小鹿与圣诞树林':'像素画：雪地里有小鹿、木屋和圣诞装饰');
     const button=$('mode');
@@ -151,23 +187,22 @@
     $('mode-label').textContent=label;
     $('mode-icon').setAttribute('href',mini?'#i-max':'#i-mini');
   }
-  window.WinterNook=Object.freeze({setMini});
-  if(!bridge)document.body.classList.add('preview');
+  window.WinterNook=Object.freeze({setMini,setSettings});
+  document.body.classList.add(bridge?'native':'preview');
   setMini(host?.mini||false);
   $('mode').addEventListener('click',()=>{
     if(bridge)bridge.postMessage({type:'mode'});
     else setMini(!mini);
   });
 
-  player=window.WinterMusic.init(state,store,say);
+  player=window.WinterMusic.init(state,store,say,startStarRain);
   function tick(ms){
-    if(!motion.matches&&!document.hidden&&ms-last>=63){last=ms;repaint(ms/1000);}
+    if(!motion.matches&&!document.hidden&&ms-last>=32){last=ms;repaint(ms/1000);}
     requestAnimationFrame(tick);
   }
   motion.addEventListener('change',repaint);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden){stamps();repaint();}});
   setInterval(stamps,60000);
   paintItems();stamps();repaint();
-  toastTimer=setTimeout(()=>$('pet-toast').classList.add('hidden'),5400);
   requestAnimationFrame(tick);
 })();

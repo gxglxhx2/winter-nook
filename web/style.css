@@ -196,3 +196,55 @@ body.preview.mini[data-length=wide] .shell{max-width:none}
 .shelf-arrows button{height:21px;width:23px;line-height:15px;border-radius:5px;background:#522666;border-color:#83528d;font-size:16px}
 .shelf-arrows button:hover{background:#713782}
 @media(prefers-reduced-motion:reduce){.playing .disc{animation:none}}
+
+/* The village is the complete resting view. The star is the sole settings entry. */
+html,body{margin:0;min-height:100%;background:#140b37}
+.shell{width:100%;max-width:none;margin:0;padding:0}
+.scene{aspect-ratio:384 / 152;border:0;border-radius:0;background:#160e45;box-shadow:none}
+.scene:after{display:none}
+#landscape{display:block;width:100%;height:100%;image-rendering:pixelated;filter:saturate(1.18) contrast(1.035)}
+#pet-hit{left:51%;top:61%;width:11%;height:25%}
+#settings-star{position:absolute;z-index:3;left:78.65%;top:35%;width:7.3%;aspect-ratio:1;max-width:104px;padding:0;display:grid;place-items:center;transform:translate(-50%,-50%);border:0;background:none;cursor:pointer;overflow:visible}
+#settings-star svg{position:absolute;width:56%;height:56%;overflow:visible;filter:drop-shadow(0 0 2px #ffb934ac)}
+#settings-star:focus-visible{outline:2px dashed #ffe89a;outline-offset:-3px;border-radius:5px}
+#settings-star .gear-mark,#settings-star[aria-expanded=true] .star-mark{visibility:hidden}
+#settings-star[aria-expanded=true] .gear-mark,#settings-star.burst .star-mark{visibility:visible}
+#settings-star.burst .gear-mark{visibility:hidden}
+#settings-star.burst .star-mark{animation:star-open 280ms cubic-bezier(.22,.66,.27,1) both}
+@keyframes star-open{
+  0%{transform:scale(1)}
+  44%{transform:scale(3.6)}
+  100%{transform:scale(1.08)}
+}
+.settings-panel{
+  flex:none;
+  width:100%;
+  padding:8px 15px 10px;
+  background:#201338;
+  color:#fff4e9;
+  border-top:1px solid #744179;
+  overflow:auto;
+  overscroll-behavior:contain;
+}
+.settings-heading,.settings-actions{display:flex;justify-content:space-between;align-items:center;gap:7px}
+.settings-heading h1{color:#ffe1a7;outline:none}
+.settings-panel .tool{min-width:30px;height:29px;font-size:11px}
+.settings-panel .music-box,.settings-panel .pet-bar{opacity:1}
+.settings-panel *{animation:none!important;transition:none!important}
+body.mini .shell{position:fixed;bottom:0;display:flex;flex-direction:column-reverse}
+body.mini .scene{flex:none;aspect-ratio:576 / 130}
+body.mini #settings-star{width:5%;max-width:100px}
+body.mini #settings-star svg{width:56%;height:56%}
+body.mini #pet-hit{left:45%;top:64%;width:9%;height:30%}
+body.mini .settings-panel{border-top:none;border-bottom:1px solid #95549c;border-radius:12px 12px 0 0}
+body.mini .settings-panel :is(.decor,.music-box,.pet-info,footer){display:revert}
+body.mini .settings-panel .music-box,body.mini .settings-panel .pet-info,body.mini .settings-panel footer{display:flex}
+body.mini .settings-panel .mode span,body.mini .settings-panel .care-btn span{display:inline}
+body.mini .settings-panel .tool{width:auto;min-width:30px;padding:0 7px}
+body.mini .settings-panel .pet-bar{position:static;margin-top:8px;border:1px solid var(--border);padding:6px 10px;background:var(--card)}
+body.mini .settings-panel .care-btn{height:31px}
+body.preview.mini .shell{bottom:8px}
+body.native{overflow:hidden}
+body.native .settings-panel{max-height:calc(100vh - 39.583333vw)}
+body.native.mini .settings-panel{max-height:calc(100vh - 22.569444vw)}
+@media(prefers-reduced-motion:reduce){#settings-star.burst .star-mark{animation:none}}

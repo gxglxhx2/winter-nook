@@ -1,4 +1,4 @@
-# 冬日小窝 · 圣诞音乐盒
+# 冬日小窝 · 星光雪夜
 
 Science Live 制作的 macOS 像素宠物游戏。让小鹿小栗、亮着彩灯的圣诞树和音乐盒留在屏幕底部。
 
@@ -6,23 +6,24 @@ Science Live 制作的 macOS 像素宠物游戏。让小鹿小栗、亮着彩灯
 
 ## 演示
 
-![圣诞音乐盒版演示，包括切歌、布置和加长挂件](docs/media/v1.1.0/music-box-demo.webp)
+![从树顶星星打开设置，在桌面挂件中播放音乐并触发星雪](docs/media/v1.2.0/star-snow-demo.webp)
 
-[下载带音乐的 21 秒演示 MP4](https://github.com/gxglxhx2/winter-nook/raw/refs/tags/v1.1.0/docs/media/v1.1.0/music-box-demo.mp4)
+[下载 19 秒带音乐的演示 MP4](https://github.com/gxglxhx2/winter-nook/raw/refs/tags/v1.2.0/docs/media/v1.2.0/star-snow-demo.mp4)
 
 ## 游戏截图
 
-![圣诞音乐盒与 DIY 圣诞工坊](docs/media/v1.1.0/game.png)
+![只留树顶金星的圣诞村](docs/media/v1.2.0/village-3840.png)
 
-![加长的透明桌面挂件](docs/media/v1.1.0/desktop.png)
+![桌面挂件上方的彩色星雪](docs/media/v1.2.0/desktop-star-snow.png)
 
 ## 功能与操作
 
 | 功能 | 怎么玩 |
 | --- | --- |
+| 树顶星星 | 点金色像素星打开设置。星星短暂放大后变成齿轮，再点一次或按 Esc 收起。 |
+| 桌面雪花 | 在设置中打开「桌面挂件」。上方有一层透明飘雪，开始播放音乐时会落下 11 秒彩色星雪。 |
 | 圣诞音乐盒 | 选播 13 首曲目，调音量、切歌或单曲循环。点「＋本地歌曲」可在当前会话导入 MP3、M4A、WAV 等。 |
 | DIY 圣诞村 | 用 6 款树填满三个树位，挑选 6 位像素伙伴和 15 件挂饰，切换红金、糖果或极光主题。 |
-| 桌面挂件 | 选标准、加长或铺满屏底，再点右上角「桌面挂件」。移到右侧可以切歌，按 **⌥⌘M** 回到布置界面。 |
 | 照顾小栗 | 摸摸小鹿、喂饼干、让它打盹，每天收集三枚雪花。旧版布置可以带入。 |
 
 ## 源码

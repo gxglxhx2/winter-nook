@@ -22,7 +22,7 @@
     return [(Number(m[3])+1)*12+pitches[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0),Number(m[4]||1)];
   }
   const baseTracks=library.map(([id,cn,en,bpm,chords,score])=>({id,cn,en,bpm,chords:chords.split(' '),notes:score.split(' ').map(note)}));
-  function init(state,save,notify){
+  function init(state,save,notify,onPlaybackStart){
     const $=id=>document.getElementById(id);
     const tracks=baseTracks.slice(), select=$('track-select'), gain=$('volume'), audioEl=new Audio();
     const active=new Set();
@@ -81,7 +81,7 @@
       }
       duration=beats*unit+.58;
     }
-    async function play(){
+    async function play(showStarRain=true){
       const generation=++rev,t=current();
       playing=true;update();
       try{
@@ -91,6 +91,7 @@
           audioEl.volume=state.volume;
           await audioEl.play();
           if(generation!==rev&&!playing)audioEl.pause();
+          if(generation===rev&&showStarRain)onPlaybackStart();
           return;
         }
         const AC=window.AudioContext||window.webkitAudioContext;
@@ -101,6 +102,7 @@
         if(offset>=duration)offset=0;
         start=ctx.currentTime+.055-offset;
         for(const [p,at,len,vol,bright] of sequence)if(at>=offset-.001)bell(p,Math.max(ctx.currentTime+.02,start+at),len,vol,bright);
+        if(showStarRain)onPlaybackStart();
         timer=setTimeout(finished,Math.max(100,(start+duration-ctx.currentTime)*1000));
       }catch{if(generation===rev){playing=false;update();notify('这首歌没有成功播放，可以试试下一首。');}}
     }
@@ -110,15 +112,15 @@
       if(!Number.isFinite(offset))offset=0;
       playing=false;silence();update();
     }
-    function pick(id,go=playing){
+    function pick(id,go=playing,showStarRain=true){
       ++rev;silence();playing=false;offset=0;
-      state.track=id;save();update();if(go)void play();
+      state.track=id;save();update();if(go)void play(showStarRain);
     }
-    function step(n,go=playing){
+    function step(n,go=playing,showStarRain=true){
       const idx=tracks.indexOf(current());
-      pick(tracks[(idx+n+tracks.length)%tracks.length].id,go);
+      pick(tracks[(idx+n+tracks.length)%tracks.length].id,go,showStarRain);
     }
-    function finished(){if(!playing)return;if(state.loop==='one')pick(current().id,true);else step(1,true);}
+    function finished(){if(!playing)return;if(state.loop==='one')pick(current().id,true,false);else step(1,true,false);}
     audioEl.addEventListener('ended',finished);
     select.addEventListener('change',()=>pick(select.value));
     document.querySelectorAll('[data-play]').forEach(b=>b.addEventListener('click',()=>playing?pause():void play()));
