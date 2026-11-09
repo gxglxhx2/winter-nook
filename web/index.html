@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>冬日小窝 · Winter Nook</title>
+<link rel="stylesheet" href="style.css">
+<script defer src="art.js"></script>
+<script defer src="game.js"></script>
+</head>
+<body>
+<svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M3.34 7l17.32 10M3.34 17 20.66 7M9 4l3 3 3-3M9 20l3-3 3 3M3.6 10.5l4.1-1.1-1.1-4.1M20.4 13.5l-4.1 1.1 1.1 4.1M3.6 13.5l4.1 1.1-1.1 4.1M20.4 10.5l-4.1-1.1 1.1-4.1"/></symbol>
+  <symbol id="i-note" viewBox="0 0 24 24"><path d="M10 17V6l10-2v11M10 9l10-2"/><ellipse cx="7" cy="17.5" rx="3" ry="2.5"/><ellipse cx="17" cy="15.5" rx="3" ry="2.5"/></symbol>
+  <symbol id="i-mini" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><rect x="12" y="11" width="6" height="6" rx="1"/></symbol>
+  <symbol id="i-max" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 15l6-6m-5 0h5v5"/></symbol>
+  <symbol id="i-cookie" viewBox="0 0 24 24"><path d="M20.9 11.6a9 9 0 1 1-8.5-8.5 4 4 0 0 0 4.5 4.5 4 4 0 0 0 4 4zM8 9h.01M7 15h.01M12 12h.01M13 17h.01" stroke-linecap="round"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 5.9a4.8 4.8 0 0 0-6.8 0L12 8l-2-2.1a4.8 4.8 0 0 0-6.8 6.8L12 21l8.8-8.3a4.8 4.8 0 0 0 0-6.8Z"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.9 13.4A8.8 8.8 0 0 1 10.6 3.1 9 9 0 1 0 20.9 13.4Z"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12m0-12H8a2 2 0 1 1 2-2l2 2Zm0 0h4a2 2 0 1 0-2-2l-2 2Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M6 6l12 12M6 18 18 6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+</svg>
+
+<main class="shell">
+  <header class="masthead">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true"><canvas width="34" height="35" data-sprite="logo"></canvas></div>
+      <div class="brand-copy"><div class="wordmark">冬日小窝</div><div class="subtitle">WINTER NOOK</div></div>
+    </div>
+    <div class="top-actions">
+      <button class="tool music" data-music aria-label="播放音乐" aria-pressed="false" title="播放音乐"><svg class="ico"><use href="#i-note"/></svg><span class="mute-strike" aria-hidden="true"></span></button>
+      <button class="tool mode" id="mode" aria-pressed="false" title="把小栗放在屏幕底部"><svg class="ico"><use id="mode-icon" href="#i-mini"/></svg><span id="mode-label">桌面挂件</span></button>
+    </div>
+  </header>
+
+  <section class="scene" aria-label="松果村的圣诞雪景">
+    <canvas id="landscape" width="384" height="152" aria-label="像素画：雪地里有小鹿、木屋和圣诞装饰"></canvas>
+    <div class="weather"><svg class="ico"><use href="#i-snow"/></svg><span>松果村</span><b></b><span>雪夜</span></div>
+    <div class="scene-tag">CHRISTMAS EVE <span>✦</span></div>
+    <button id="pet-hit" aria-label="摸摸小栗" title="摸摸小栗"></button>
+    <div class="pet-toast" id="pet-toast" aria-hidden="true">今晚一起过圣诞吧！</div>
+  </section>
+  <section class="pet-bar" aria-label="照顾小栗">
+    <div class="pet-info">
+      <div class="avatar" aria-hidden="true"><canvas width="43" height="43" data-sprite="pet"></canvas></div>
+      <div class="identity">
+        <div class="pet-name">小栗<span class="species">圣诞小鹿</span></div>
+        <div class="pet-status"><span class="status-dot"></span><span id="pet-status">想跟你一起看雪</span></div>
+      </div>
+    </div>
+    <div class="care">
+      <button class="care-btn primary" data-action="feed"><svg class="ico"><use href="#i-cookie"/></svg><span>喂饼干</span></button>
+      <button class="care-btn" data-action="pet"><svg class="ico"><use href="#i-heart"/></svg><span>摸摸头</span></button>
+      <button class="care-btn" data-action="sleep"><svg class="ico"><use href="#i-moon"/></svg><span>打个盹</span></button>
+    </div>
+  </section>
+  <section class="decor" aria-labelledby="decor-title">
+    <div class="section-head">
+      <h1 id="decor-title"><svg class="ico"><use href="#i-box"/></svg>圣诞装饰 <span>DECORATE</span></h1>
+      <div class="section-caption"><span id="decor-count">已摆放 2 件</span><b></b><span>点击摆放或收起</span></div>
+    </div>
+    <div id="items" class="items" aria-label="装饰清单"></div>
+  </section>
+  <footer>
+    <div class="stamps"><svg class="ico"><use href="#i-snow"/></svg><span>今日陪伴</span><span class="stamp-pips" id="stamp-pips" aria-hidden="true"><i></i><i></i><i></i></span><span id="stamp-count">0 / 3</span></div>
+    <span class="saved"><svg class="ico"><use href="#i-check"/></svg>进度自动保存</span>
+  </footer>
+  <p class="sr-only" id="live" role="status" aria-live="polite"></p>
+</main>
+</body>
+</html>
